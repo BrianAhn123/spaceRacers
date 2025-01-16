@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Media;
 
 namespace spaceRacers
 {
@@ -23,7 +24,10 @@ namespace spaceRacers
         List<Rectangle> asteroids = new List<Rectangle>();
         List<Rectangle> asteroids2 = new List<Rectangle>();
 
-        int asteroidsSpeed = 6;
+        List<int> asteroidSpeed = new List<int>();
+        List<int> asteroidSize = new List<int>();
+        List<int> asteroidSpeed2 = new List<int>();
+        List<int> asteroidSize2 = new List<int>();
 
         //inputs
         bool upPressed = false;
@@ -36,12 +40,19 @@ namespace spaceRacers
 
         SolidBrush orangeBrush = new SolidBrush(Color.OrangeRed);
         SolidBrush whiteBrush = new SolidBrush(Color.White);
+        Pen whitePen = new Pen(Color.White);
 
         int player1Score = 0;
         int player2Score = 0;
 
+        int time = 2000;
+
 
         Random randGen = new Random();
+
+        SoundPlayer points = new SoundPlayer(Properties.Resources.point);
+        SoundPlayer explosions = new SoundPlayer(Properties.Resources.explosion);
+        SoundPlayer winner = new SoundPlayer(Properties.Resources.youWin);
 
         public spaceRacer()
         {
@@ -126,6 +137,8 @@ namespace spaceRacers
                 int y = randGen.Next(30, this.Height - 60);
                 Rectangle newAsteroids = new Rectangle(0, y, 10, 2);
                 asteroids.Add(newAsteroids);
+                asteroidSpeed.Add(randGen.Next(4, 16));
+                asteroidSize.Add(randGen.Next(4, 16));
 
             }
 
@@ -134,20 +147,21 @@ namespace spaceRacers
                 int y = randGen.Next(30, this.Height - 60);
                 Rectangle newAsteroids2 = new Rectangle(600, y, 10, 2);
                 asteroids2.Add(newAsteroids2);
-
+                asteroidSpeed2.Add(randGen.Next(4, 16));
+                asteroidSize2.Add(randGen.Next(4, 16));
             }
 
             //move asteroids 
             for (int i = 0; i < asteroids.Count; i++)
             {
-                int x = asteroids[i].X + asteroidsSpeed;
-                asteroids[i] = new Rectangle(x, asteroids[i].Y, 10, 2);
+                int x = asteroids[i].X + asteroidSpeed[i];
+                asteroids[i] = new Rectangle(x, asteroids[i].Y, asteroidSize[i], asteroidSize[i]);
             }
 
             for (int i = 0; i < asteroids2.Count; i++)
             {
-                int x = asteroids2[i].X - asteroidsSpeed;
-                asteroids2[i] = new Rectangle(x, asteroids2[i].Y, 10, 2);
+                int x = asteroids2[i].X - asteroidSpeed2[i];
+                asteroids2[i] = new Rectangle(x, asteroids2[i].Y, asteroidSize2[i], asteroidSize2[i]);
             }
 
             //check if rocket1 hits asteroids
@@ -155,8 +169,11 @@ namespace spaceRacers
             {
                 if (rocket1.IntersectsWith(asteroids[i]))
                 {
+                    explosions.Play();
                     rocket1.Y = 400;
                     asteroids.RemoveAt(i);
+                    asteroidSpeed.RemoveAt(i);
+                    asteroidSize.RemoveAt(i);
                 }
             }
 
@@ -164,8 +181,11 @@ namespace spaceRacers
             {
                 if (rocket1.IntersectsWith(asteroids2[i]))
                 {
+                    explosions.Play();
                     rocket1.Y = 400;
                     asteroids2.RemoveAt(i);
+                    asteroidSpeed2.RemoveAt(i);
+                    asteroidSize2.RemoveAt(i);
                 }
             }
 
@@ -174,8 +194,11 @@ namespace spaceRacers
             {
                 if (rocket2.IntersectsWith(asteroids[i]))
                 {
+                    explosions.Play();
                     rocket2.Y = 400;
                     asteroids.RemoveAt(i);
+                    asteroidSpeed.RemoveAt(i);
+                    asteroidSize.RemoveAt(i);
                 }
             }
 
@@ -183,8 +206,11 @@ namespace spaceRacers
             {
                 if (rocket2.IntersectsWith(asteroids2[i]))
                 {
+                    explosions.Play();
                     rocket2.Y = 400;
                     asteroids2.RemoveAt(i);
+                    asteroidSpeed2.RemoveAt(i);
+                    asteroidSize2.RemoveAt(i);
                 }
             }
 
@@ -195,20 +221,25 @@ namespace spaceRacers
                 if (asteroids[i].X >= this.Width)
                 {
                     asteroids.RemoveAt(i);
+                    asteroidSpeed.RemoveAt(i);
+                    asteroidSize.RemoveAt(i);
                 }
             }
 
             for (int i = 0; i < asteroids2.Count; i++)
             {
-                if (asteroids2[i].X >= this.Width)
+                if (asteroids2[i].X <= this.Width - 832)
                 {
                     asteroids2.RemoveAt(i);
+                    asteroidSpeed2.RemoveAt(i);
+                    asteroidSize2.RemoveAt(i);
                 }
             }
 
             //check if rocket hits the top 
             if (rocket1.Y < 0)
             {
+                points.Play();
                 rocket1.Y = 400;
                 player1Score++;
                 player1Label.Text = $"{player1Score}";
@@ -216,6 +247,7 @@ namespace spaceRacers
 
             if (rocket2.Y < 0)
             {
+                points.Play();
                 rocket2.Y = 400;
                 player2Score++;
                 player2Label.Text = $"{player2Score}";
@@ -224,15 +256,45 @@ namespace spaceRacers
             //win condition
             if (player1Score == 3)
             {
+                winner.Play();
                 winLabel.Text = "PLAYER 1 WINS";
                 gameTimer.Stop();
             }
 
             if (player2Score == 3)
             {
+                winner.Play();
                 winLabel.Text = "PLAYER 2 WINS";
                 gameTimer.Stop();
             }
+
+
+            time--;
+            timeLabel.Text = $"{time}";
+
+            if (time == 0)
+            {
+                gameTimer.Stop();
+                if (player1Score > player2Score)
+                {
+                    winner.Play();
+                    winLabel.Text = "PLAYER 1 WINS";
+                    gameTimer.Stop();
+                }
+                else if (player2Score > player1Score)
+                {
+                    winner.Play();
+                    winLabel.Text = "PLAYER 2 WINS";
+                    gameTimer.Stop();
+                }
+                else if (player1Score == player2Score)
+                {
+                    winner.Play();
+                    winLabel.Text = "TIE";
+                    gameTimer.Stop();
+                }
+            }
+
 
             Refresh();
         }
@@ -240,6 +302,7 @@ namespace spaceRacers
         private void spaceRacer_Paint(object sender, PaintEventArgs e)
         {
                 e.Graphics.FillRectangle(Brushes.White, rocket1);
+
 
                 e.Graphics.FillRectangle(Brushes.White, rocket2);
 

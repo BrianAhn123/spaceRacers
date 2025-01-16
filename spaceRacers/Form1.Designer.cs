@@ -29,10 +29,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(spaceRacer));
             this.gameTimer = new System.Windows.Forms.Timer(this.components);
             this.player1Label = new System.Windows.Forms.Label();
             this.player2Label = new System.Windows.Forms.Label();
             this.winLabel = new System.Windows.Forms.Label();
+            this.timeLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // gameTimer
@@ -65,10 +67,20 @@
             // 
             this.winLabel.AutoSize = true;
             this.winLabel.ForeColor = System.Drawing.Color.White;
-            this.winLabel.Location = new System.Drawing.Point(381, 155);
+            this.winLabel.Location = new System.Drawing.Point(362, 133);
             this.winLabel.Name = "winLabel";
             this.winLabel.Size = new System.Drawing.Size(0, 16);
             this.winLabel.TabIndex = 2;
+            // 
+            // timeLabel
+            // 
+            this.timeLabel.AutoSize = true;
+            this.timeLabel.ForeColor = System.Drawing.Color.White;
+            this.timeLabel.Location = new System.Drawing.Point(381, 501);
+            this.timeLabel.Name = "timeLabel";
+            this.timeLabel.Size = new System.Drawing.Size(41, 16);
+            this.timeLabel.TabIndex = 3;
+            this.timeLabel.Text = "Time:";
             // 
             // spaceRacer
             // 
@@ -76,12 +88,14 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(832, 553);
+            this.Controls.Add(this.timeLabel);
             this.Controls.Add(this.winLabel);
             this.Controls.Add(this.player2Label);
             this.Controls.Add(this.player1Label);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "spaceRacer";
             this.Text = "Form1";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.spaceRacer_Paint);
@@ -98,6 +112,7 @@
         private System.Windows.Forms.Label player1Label;
         private System.Windows.Forms.Label player2Label;
         private System.Windows.Forms.Label winLabel;
+        private System.Windows.Forms.Label timeLabel;
     }
 }
 
